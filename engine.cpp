@@ -42,7 +42,8 @@ int main() {
     int ph=height/2;
     int pw=width/2;
     int pd=depth/2;
-
+    int prh=0;
+    int prw=0;
     //getting in keyboard input
     //w=17 a=20 s=31 d=32
     int keyinputopen=open(keyboard, O_RDONLY | O_NONBLOCK);
@@ -59,6 +60,11 @@ int main() {
     int scounter=0;
     int dcounter=0;
     int spacecounter=0;
+
+    int rotationthr=360/7;
+    int prhcounter=0;
+    int prwcounter=0;
+
     while(true){
         while (read(keyinputopen,&keybinputs,sizeof(keybinputs))==sizeof(keybinputs)){
             // cout<<keybinputs.code<<"\n";
@@ -110,12 +116,29 @@ int main() {
             }
         }
         while (read(mouseinputopen,&mouseinputs,sizeof(mouseinputs))==sizeof(mouseinputs)){
-            // cout<<mouseinputs.value<<"   "<<mouseinputs.code<<"\n";
-            continue;
+            if(mouseinputs.code==1 && mouseinputs.type==2){
+                prhcounter+=1;
+                if(prhcounter==rotationthr){
+                    prhcounter=0;
+                    prh+=1;
+                }
+            }
+            if(mouseinputs.code==0 && mouseinputs.type==2){
+                prwcounter+=1;
+                if(prwcounter==rotationthr){
+                    prwcounter=0;
+                    prw+=1;
+                }
+            }
+            // cout<<mouseinputs.code<<"\n";
+            // continue;
         }
-        string clearcords="\033[2J\033[1;1H"+to_string(ph)+" "+to_string(pw)+" "+to_string(pd);
+        string clearcords="\033[2J\033[1;1H"+to_string(ph)+" "+to_string(pw)+" "+to_string(pd)+"\n"+to_string(prh)+" "+to_string(prw);
         write(STDOUT_FILENO, clearcords.data(), clearcords.size());
+        // string clearcords="\033[2J\033[1;1H"+to_string(ph)+" "+to_string(pw)+" "+to_string(pd);
+        // write(STDOUT_FILENO, clearcords.data(), clearcords.size());
         std::this_thread::sleep_for(std::chrono::microseconds(50000));
+
         // ssize_t ie=read(keyinputopen,&keybinputs,sizeof(keybinputs));
         // if(ie!=sizeof(keybinputs)){
         //     continue;
